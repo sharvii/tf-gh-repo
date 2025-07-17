@@ -35,9 +35,6 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
 
-      - name: Show OIDC subject
-        run: echo "OIDC subject: repo=${{ github.repository }} ref=${{ github.ref }}"    
-
   terraform-apply:
     name: Terraform Apply
     needs: terraform-plan
