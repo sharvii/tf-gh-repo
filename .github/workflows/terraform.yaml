@@ -45,11 +45,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show OIDC subject
-        env:
-          GIT_REPO: ${{ github.repository }}
-          GIT_REF: ${{ github.ref }}  
-        run: echo "OIDC subject: repo=${GIT_REPO} ref=${GIT_REF}"
+          #      - name: Show OIDC subject
+          #env:
+          #GIT_REPO: ${{ github.repository }}
+          #GIT_REF: ${{ github.ref }}  
+          # run: echo "OIDC subject: repo=${GIT_REPO} ref=${GIT_REF}"
 
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
