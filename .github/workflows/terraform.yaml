@@ -9,13 +9,24 @@ on:
     branches:
       - main
 
-  workflow_dispatch:         
+  workflow_dispatch:      
+    inputs:
+      environment:
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - stage
+          - prod   
 
 jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: environments/${{ github.event.inputs.environment }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,17 +41,21 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       
       - name: Terraform Init & Migrate
-        run: terraform init -migrate-state -force-copy -input=false
+        run: terraform init 
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -var-file=terraform.tfvars
 
-  terraform-apply:
+  terraform-dev-apply:
+    if: github.ref == 'refs/heads/main'
     name: Terraform Apply
     needs: terraform-plan
     runs-on: ubuntu-latest
     environment:
       name: dev
+    defaults:
+      run:
+        working-directory: environments/${{ github.event.inputs.environment }}  
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,5 +79,5 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve  -var-file=terraform.tfvars
 
