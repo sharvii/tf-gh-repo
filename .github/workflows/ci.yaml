@@ -35,7 +35,7 @@ jobs:
         run: echo "IMAGE_TAG=build-${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
 
       - name: Build Docker Image
-        run: docker build -t ${{secrets.ECR_REGISTRY}}/${{secrets.ECR_REPOSITORY}}:$IMAGE_TAG 
+        run: docker build -t ${{secrets.ECR_REGISTRY}}/${{secrets.ECR_REPOSITORY}}:$IMAGE_TAG . 
 
       - name: Install Trivy
         run: |
