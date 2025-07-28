@@ -1,0 +1,22 @@
+title = "gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "global ignore patterns"
+regexes = ['''1234567890abcdef1234567890abcdef''']
+paths = ['''\.gitignore''', '''vendor/''']
+
+[[rules]]
+id = "aws-access-key"
+description = "Detect AWS Access Key"
+regex = '''(A3T[A-Z0-9]|AKIA|ASIA)[A-Z0-9]{16}'''
+keywords = ["AWS", "access_key"]
+tags = ["aws", "credentials"]
+entropy = 3.5
+
+[[rules.allowlists]]
+description = "Ignore revoked key in specific commit"
+commits = ["<commit-sha>"]
+paths = ['''config.env''']

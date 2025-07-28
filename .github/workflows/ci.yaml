@@ -28,6 +28,16 @@ jobs:
           server-password: ${{ secrets.GITHUB_TOKEN }}
           overwrite-settings: true
 
+      - name: Run Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # only for org repos
+        with:
+          config: .gitleaks.toml   # custom config file
+          redact: true             # mask actual secrets in logs
+          fail: true               # fail the job if leaks found
+          
       - name: Build & Test
         run: mvn clean verify
 
