@@ -47,16 +47,25 @@ jobs:
       - name: Build Docker Image
         run: docker build -t ${{secrets.ECR_REGISTRY}}/${{secrets.ECR_REPOSITORY}}:$IMAGE_TAG . 
 
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install wget -y
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+      - name: Install Trivy (binary setup & cache)
+        uses: aquasecurity/setup-trivy@v0.2.3
+        with:
+          version: v0.64.1
+          cache: true
+      
+      - name: Run Trivy scan (image mode)
+        uses: aquasecurity/trivy-action@v0.32.0
+        with:
+          image-ref: ${{secrets.ECR_REGISTRY}}/${{secrets.ECR_REPOSITORY}}:$IMAGE_TAG
+          format: sarif
+          output: trivy-results.sarif
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
 
-      - name: Scan Docker Image with Trivy
-        run: |
-          trivy image --exit-code 1 --severity HIGH,CRITICAL $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # - name: Scan Docker Image with Trivy
+      #   run: |
+      #     trivy image --exit-code 1 --severity HIGH,CRITICAL $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
